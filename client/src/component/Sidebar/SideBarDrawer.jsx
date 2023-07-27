@@ -1,9 +1,14 @@
 import { Drawer, Button, styled, Box } from "@mui/material";
-import CreateIcon from '@mui/icons-material/Create';
+import { Create, Close } from '@mui/icons-material';
 import SideBarContent from "./SideBarContent";
+import ComposeMailDialog from "./Compose/ComposeMailDailog";
+import { useState } from "react";
+
 
 
 const SideBarDrawer = () => {
+
+    const [openDialog, setOpenDialog] = useState(false)
 
     const ComposeStyled = styled(Box)({
         width: '100%',
@@ -21,6 +26,14 @@ const SideBarDrawer = () => {
         fontSize: 16,
         width: "80%"
     })
+    const dailofStyled = {
+        height: '90%',
+        width: '70%'
+    }
+
+    const composeOnClick = () => {
+        setOpenDialog(true)
+    }
 
 
     return (
@@ -37,11 +50,17 @@ const SideBarDrawer = () => {
             }}
         >
             <ComposeStyled>
-                <ComposeButton><CreateIcon /> Compose</ComposeButton>
+                <ComposeButton onClick={composeOnClick}><Create /> Compose</ComposeButton>
+
+                {
+                    openDialog == true ? <ComposeMailDialog openDialog={openDialog} setOpenDialog={setOpenDialog} /> : ""
+                }
+
             </ComposeStyled>
             <SideBarContent />
 
         </Drawer>
+
     )
 }
 
