@@ -1,10 +1,15 @@
-import { Dialog, DialogTitle, DialogActions, Button, Typography, Box, InputBase, TextField } from "@mui/material";
+import { Dialog, DialogTitle, DialogActions, Button, Typography, Box, InputBase, TextField, unstable_ClassNameGenerator } from "@mui/material";
 import emailjs from 'emailjs-com'
 import { Close } from '@mui/icons-material';
 import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
+import useApi from "../../../hooks/useAPI";
+import { apiUrl } from "../../../sevices/api.url";
 
 const ComposeMailDialog = ({ openDialog, setOpenDialog }) => {
+
+    const [data, setData] = useState({})
+    const sentDataApi = useApi(apiUrl.saveSentEmail);
 
 
     const SenderDetailBox = styled(Box)({
@@ -22,22 +27,40 @@ const ComposeMailDialog = ({ openDialog, setOpenDialog }) => {
         height: '5%'
     })
 
-    const onValueChange = (e) => {
-
-    }
-
-
     const sentEmail = (e) => {
         e.preventDefault();
+        const payload = {
+            to: data.to,
+            from: 'shivamrana706@gmail.com',
+            message: data.message,
+            subject: data.subject,
+            date: new Date(),
+            name: 'shivam',
+            image: '',
+            starred: false,
+            type: 'sent'
+        }
         emailjs.send("service_wf6bydr", "template_wsywnhn", {
-            message: e.target.value,
-            subject: e.target.value,
-            reply_to: e.target.value,
+            message: data.message,
+            subject: data.subject,
+            reply_to: data.to,
         }, "8gP34C7_gmFU5nDIu").then((result) => {
             console.log(result.text);
+            sentDataApi.call(payload);
+            // setOpenDialog(false)
         }, (error) => {
             console.log(error.text);
         });
+
+
+
+    }
+
+    const onValueChange = (e) => {
+        e.preventDefault();
+        setData({ ...data, [e.target.name]: e.target.value })
+        // console.log(data)
+
     }
 
     return (
@@ -54,25 +77,28 @@ const ComposeMailDialog = ({ openDialog, setOpenDialog }) => {
                     <Close fontSize='small' onClick={() => { setOpenDialog(false) }} />
                 </DialogActions>
             </DialogTitle>
-            <SenderDetailBox>
-                <InputBase onChange={(e) => { onValueChange(e) }} placeholder="To" name="reply_to"
-                    style={{ borderBottom: '1px solid #0000001f', marginBottom: '2px' }} />
+            {/* <SenderDetailBox> */}
+            <Box style={{ display: 'flex', flexDirection: 'column', padding: '0px,15px', height: '85%' }}>
+                <InputBase onChange={(e) => { onValueChange(e) }} placeholder="To" name="to"
+                    style={{ borderBottom: '1px solid #0000001f', marginBottom: '2px', padding: '0px 15px' }} />
                 <InputBase onChange={(e) => { onValueChange(e) }} placeholder="subject" name="subject"
-                    style={{ borderBottom: '1px solid #0000001f', marginBottom: '5px', color: 'black' }} />
-                <TextFieldStyled
+                    style={{ borderBottom: '1px solid #0000001f', marginBottom: '5px', color: 'black', padding: '0px 15px' }} />
+                <TextField
                     id="outlined-textarea"
                     label=""
                     name="message"
                     placeholder=""
                     multiline
-                    sx={{ '.MuiOutlinedInput-notchedOutline': { border: 'none' }, '.MuiInputBase-root': { padding: '0px' } }}
+                    style={{ padding: '0px 15px' }}
+                    sx={{ '.MuiOutlinedInput-notchedOutline': { border: 'none', padding: '0px 15px' }, '.MuiInputBase-root': { padding: '0px' } }}
                     rows={19}
                     size="medium"
                     onChange={(e) => onValueChange(e)}
                 // fullWidth={ }
                 />
+            </Box>
 
-            </SenderDetailBox>
+            {/* </SenderDetailBox> */}
             <FooterStyled>
                 <Button onClick={sentEmail} style={{ backgroundColor: '#3e3b3bc4', color: "white", width: '100px', borderRadius: '10px' }}>Send</Button>
             </FooterStyled>
