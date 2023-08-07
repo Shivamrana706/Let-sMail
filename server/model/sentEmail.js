@@ -42,6 +42,4 @@ const sentEmailSchema = new mongoose.Schema({
 
 })
 
-const sentEmailModel = mongoose.model('Mail', sentEmailSchema);
-
-export default sentEmailModel;
+export const EmailModel = mongoose.model('mail', sentEmailSchema);
